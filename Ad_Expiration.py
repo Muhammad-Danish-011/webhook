@@ -22,7 +22,9 @@ receiver_email = 'tauheedaqsa1@gmail.com'  # Replace with recipient's email
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:123@localhost/Ad_Expiration_managment '
 db = SQLAlchemy(app)
 
+
 # Define the database model
+#------------------------------------------------------------------
 class AdTracking(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     ad_title = db.Column(db.String(255))
@@ -51,7 +53,7 @@ def save_Ad_Tracking_Data(Ad_Tracking_Data):
         ad.expiration_date = ad_data['Expiration_Date']
         db.session.add(ad)
     db.session.commit()
-
+#------------------------------------------------------------------------------
 # Function to send email
 def send_email(subject, message):
     msg = MIMEMultipart()
@@ -113,7 +115,7 @@ def webhook_handler():
 #------------------------------------------------------------
 #add user information in database 
 
-@app.route('/ad-expiration-post', methods=['GET','POST'])
+@app.route('/ad-expiration-post', methods=['GET', 'POST'])
 def receive_Ad_Tracking_Data():
     if request.method == 'POST':
         data = request.json
@@ -126,8 +128,8 @@ def receive_Ad_Tracking_Data():
 
         if ad_id is not None and expiration_date is not None:
             # Convert date strings to datetime objects
-            start_date = datetime.strptime(start_date, '%Y-%m-%dT%H:%M:%SZ')
-            expiration_date = datetime.strptime(expiration_date, '%Y-%m-%dT%H:%M:%SZ')
+            start_date = datetime.strptime(start_date, '%Y-%m-%d %H:%M:%S')  # Updated format
+            expiration_date = datetime.strptime(expiration_date, '%Y-%m-%d %H:%M:%S')  # Updated format
 
             # Create or update the AdTracking record
             ad = AdTracking.query.get(ad_id) or AdTracking()
@@ -148,7 +150,6 @@ def receive_Ad_Tracking_Data():
         return jsonify({'message': 'Welcome to the Ad-Expiration API.'}), 200
     else:
         return jsonify({'message': 'Invalid request method.'}), 405
-
 #-----------------------------------------------------------------------------
 
 
